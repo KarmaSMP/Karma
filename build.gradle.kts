@@ -2,7 +2,7 @@ import java.io.BufferedReader
 
 val commitHash = Runtime
     .getRuntime()
-    .exec("git rev-parse --short HEAD")
+    .exec(arrayOf("git", "rev-parse", "--short", "HEAD"))
     .let { process ->
         process.waitFor()
         val output = process.inputStream.use {
@@ -20,7 +20,7 @@ plugins {
 }
 
 group = "io.karmasmp"
-version = "1.0-SNAPSHOT"
+version = "1.0-$commitHash"
 
 repositories {
     mavenCentral()
