@@ -1,0 +1,7 @@
+name: Karma
+version: '${version}'
+main: io.github.karmasmp.karma.Karma
+description: Not the reddit kind you idiot
+authors: ["Austin Albrecht", "Byrt", "MrKacafirekCZ"]
+website: https://github.com/KarmaSMP
+api-version: '1.20.6'
