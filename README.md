@@ -1,0 +1,3 @@
+# Karma
+
+Plugin for KarmaSMP
