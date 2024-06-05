@@ -7,7 +7,7 @@ import org.incendo.cloud.execution.ExecutionCoordinator
 import org.incendo.cloud.paper.PaperCommandManager
 
 
-@Suppress("unused")
+@Suppress("unused", "unstableApiUsage")
 class Karma : JavaPlugin() {
     private lateinit var commandManager: PaperCommandManager<CommandSourceStack>
 

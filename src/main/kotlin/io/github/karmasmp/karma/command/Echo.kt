@@ -6,7 +6,7 @@ import org.incendo.cloud.annotations.Permission
 import org.incendo.cloud.annotations.processing.CommandContainer
 
 
-@Suppress("unused")
+@Suppress("unused", "unstableApiUsage")
 @CommandContainer
 class Echo {
     @Command("echo <text>")
