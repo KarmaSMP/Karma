@@ -33,4 +33,11 @@ object PlayerManager {
         val karmaPlayer = players.find { it.uuid == this.uniqueId }
         return karmaPlayer!!.lives
     }
+
+    fun Player.setKarmaLives(lives: Int) {
+        if (lives > 3 || lives < 0) throw PlayerManagerException("Invalid amount of lives passed")
+
+        val karmaPlayer = players.find { it.uuid == this.uniqueId }
+        karmaPlayer!!.lives = lives
+    }
 }
