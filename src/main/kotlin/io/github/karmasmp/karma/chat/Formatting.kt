@@ -18,7 +18,7 @@ object Formatting {
         WARNING_PREFIX("warning", "⚠ ");
 
         companion object {
-            fun ofName(str: String): Prefix {
+            fun ofName(str : String): Prefix {
                 for(p in entries) {
                     if (p.prefixName == str) return p
                 }

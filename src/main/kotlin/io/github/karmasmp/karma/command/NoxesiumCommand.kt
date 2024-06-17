@@ -18,7 +18,7 @@ import org.incendo.cloud.annotations.processing.CommandContainer
 class NoxesiumCommand {
     @Command("noxesium head <player>")
     @Permission("karma.cmd.noxesium")
-    fun noxesiumHead(css: CommandSourceStack, player: Player) {
+    fun noxesiumHead(css : CommandSourceStack, player : Player) {
         if(css.sender is Player) {
             if(Noxesium.isNoxesiumUser(css.sender as Player)) {
                 css.sender.sendMessage(Component.text("${player.name}'s head: ", NamedTextColor.YELLOW).append(Noxesium.buildSkullComponent(player.uniqueId, false, 0, 0, 1.0f)))
@@ -30,7 +30,7 @@ class NoxesiumCommand {
 
     @Command("noxesium protocol <player>")
     @Permission("karma.cmd.noxesium")
-    fun noxesiumProtocol(css: CommandSourceStack, player: Player) {
+    fun noxesiumProtocol(css : CommandSourceStack, player : Player) {
         val protocol = Noxesium.getNoxesiumUsers()[player.uniqueId]
         if(protocol != null) {
             css.sender.sendMessage(Component.text("${player.name}'s Noxesium protocol is ", NamedTextColor.YELLOW).append(Component.text("$protocol", NamedTextColor.GOLD)).append(Component.text(".", NamedTextColor.YELLOW)))

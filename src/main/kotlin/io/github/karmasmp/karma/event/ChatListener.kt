@@ -18,7 +18,7 @@ import org.bukkit.event.Listener
 class ChatListener : Listener, ChatRenderer {
 
     @EventHandler
-    fun onChat(event: AsyncChatEvent) {
+    fun onChat(event : AsyncChatEvent) {
         event.renderer(this)
     }
 

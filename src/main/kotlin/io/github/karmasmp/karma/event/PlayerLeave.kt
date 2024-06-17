@@ -8,7 +8,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 
 class PlayerLeave : Listener {
     @EventHandler
-    private fun onLeave(event: PlayerQuitEvent) {
+    private fun onLeave(event : PlayerQuitEvent) {
         Noxesium.removeNoxesiumUser(event.player)
     }
 }

@@ -17,7 +17,7 @@ object ChatUtils {
     private val RED_HEART = HEART.color(NamedTextColor.RED)
     private val GRAY_HEART = HEART.color(NamedTextColor.DARK_GRAY)
 
-    fun livesAsComponent(liveCount: Int): Component {
+    fun livesAsComponent(liveCount : Int) : Component {
         return if (liveCount >= 3) {
             GREEN_HEART
                 .append(GREEN_HEART)
@@ -38,7 +38,7 @@ object ChatUtils {
     }
 
     /** Sends a message to the admin channel which includes all online admins. **/
-    fun broadcastAdmin(rawMessage : String, isSilent: Boolean) {
+    fun broadcastAdmin(rawMessage : String, isSilent : Boolean) {
         val admin = Audience.audience(Bukkit.getOnlinePlayers())
             .filterAudience { (it as Player).hasPermission("karma.group.admin") }
         admin.sendMessage(
@@ -50,7 +50,7 @@ object ChatUtils {
     }
 
     /** Sends a message to the dev channel which includes all online devs. **/
-    fun broadcastDev(rawMessage : String, isSilent: Boolean) {
+    fun broadcastDev(rawMessage : String, isSilent : Boolean) {
         val dev = Audience.audience(Bukkit.getOnlinePlayers())
             .filterAudience { (it as Player).hasPermission("karma.group.dev") }
         dev.sendMessage(

@@ -18,7 +18,7 @@ class BrandMessenger : PluginMessageListener {
                 .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             val rawString = "<notifcolour>${player.name}<white> joined using <notifcolour>$brand<white>."
             if(brand.lowercase().trim() == "vanilla") {
-                rawString.plus(" <dark_gray><i>(Could be un-named client)")
+                rawString.plus(" <dark_gray><i>(Could be un-named client).")
             }
             ChatUtils.broadcastDev(rawString, true)
             logger.info("(BRAND) ${player.name} joined using $brand.")

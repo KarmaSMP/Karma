@@ -30,8 +30,8 @@ import java.time.Duration
 
 @Suppress("unused", "unstableApiUsage")
 class Karma : JavaPlugin() {
-    private lateinit var commandManager: PaperCommandManager<CommandSourceStack>
-    private lateinit var annotationParser: AnnotationParser<CommandSourceStack>
+    private lateinit var commandManager : PaperCommandManager<CommandSourceStack>
+    private lateinit var annotationParser : AnnotationParser<CommandSourceStack>
 
     override fun onEnable() {
         logger.info("What is up gamers")

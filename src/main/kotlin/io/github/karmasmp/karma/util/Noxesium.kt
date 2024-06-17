@@ -38,7 +38,7 @@ object Noxesium {
         return noxesiumUsers
     }
 
-    /** Returns whether an online player is in the noxesiumUsers list or not. **/
+    /** Returns whether an online player is in the noxesiumUsers list. **/
     fun isNoxesiumUser(player : Player) : Boolean {
         return noxesiumUsers.containsKey(player.uniqueId)
     }

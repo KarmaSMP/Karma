@@ -18,7 +18,7 @@ import org.incendo.cloud.processors.confirmation.annotation.Confirmation
 class Lives {
     @Command("lives get [player]")
     @Permission("karma.cmd.lives.get")
-    fun get(css: CommandSourceStack, player: Player?) {
+    fun get(css : CommandSourceStack, player: Player?) {
         if (player == null) {
             css.sender.sendMessage("You have ${(css.sender as Player).getKarmaLives()} lives remaining.")
         } else {

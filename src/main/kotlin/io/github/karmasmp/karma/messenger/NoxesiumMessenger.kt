@@ -16,7 +16,7 @@ class NoxesiumMessenger : PluginMessageListener {
     }
 
     private fun parseIntByteArray(bytes : ByteArray) : Int {
-        // Could quite possibly be destroyed if Daniel changes how information is send from Noxesium.
+        // Could quite possibly be destroyed if Daniel changes how information is sent from Noxesium.
         return bytes[1].toInt()
     }
 }
