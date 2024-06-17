@@ -37,6 +37,7 @@ dependencies {
     implementation("org.incendo:cloud-kotlin-coroutines-annotations:2.0.0-rc.2")
     kapt("org.incendo:cloud-kotlin-coroutines-annotations:2.0.0-rc.2")
     implementation("org.incendo:cloud-kotlin-extensions:2.0.0-rc.1")
+    implementation("org.incendo:cloud-processors-confirmation:1.0.0-beta.3")
 }
 
 kotlin {
