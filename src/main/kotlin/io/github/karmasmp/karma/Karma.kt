@@ -1,6 +1,11 @@
 package io.github.karmasmp.karma
 
+import io.github.karmasmp.karma.event.ChatListener
+import io.github.karmasmp.karma.event.PlayerDeath
+import io.github.karmasmp.karma.event.PlayerJoin
 import io.papermc.paper.command.brigadier.CommandSourceStack
+import org.bukkit.Bukkit
+import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import org.incendo.cloud.annotations.AnnotationParser
 import org.incendo.cloud.execution.ExecutionCoordinator
@@ -14,6 +19,7 @@ class Karma : JavaPlugin() {
     override fun onEnable() {
         logger.info("What is up gamers")
         registerCommands()
+        registerEvents()
     }
 
     override fun onDisable() {
@@ -28,4 +34,17 @@ class Karma : JavaPlugin() {
         val annotationParser = AnnotationParser(commandManager, CommandSourceStack::class.java)
         annotationParser.parseContainers()
     }
+
+    private fun registerEvents() {
+        registerEvent(PlayerDeath())
+        registerEvent(PlayerJoin())
+        registerEvent(ChatListener())
+    }
+
+    private fun registerEvent(listener: Listener) {
+        server.pluginManager.registerEvents(listener, this)
+    }
 }
+
+val plugin = Bukkit.getPluginManager().getPlugin("Karma")!!
+val logger = plugin.logger
