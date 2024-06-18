@@ -46,4 +46,5 @@ class Karma : JavaPlugin() {
     }
 }
 
-val logger = Bukkit.getPluginManager().getPlugin("Karma")!!.logger
+val plugin = Bukkit.getPluginManager().getPlugin("Karma")!!
+val logger = plugin.logger

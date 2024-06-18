@@ -9,6 +9,6 @@ import org.bukkit.event.entity.PlayerDeathEvent
 class PlayerDeath : Listener {
     @EventHandler
     fun onPlayerDeath(event: PlayerDeathEvent) {
-        PlayerManager.death(event.player.uniqueId)
+        PlayerManager.death(event.player)
     }
 }
