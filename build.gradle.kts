@@ -29,14 +29,14 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    compileOnly("io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
 
     implementation("org.incendo:cloud-core:2.0.0-rc.2")
-    implementation("org.incendo:cloud-paper:2.0.0-beta.8")
+    implementation("org.incendo:cloud-paper:2.0.0-beta.9")
     implementation("org.incendo:cloud-annotations:2.0.0-rc.2")
     implementation("org.incendo:cloud-kotlin-coroutines-annotations:2.0.0-rc.2")
     kapt("org.incendo:cloud-kotlin-coroutines-annotations:2.0.0-rc.2")
-    implementation("org.incendo:cloud-kotlin-extensions:2.0.0-rc.1")
+    implementation("org.incendo:cloud-kotlin-extensions:2.0.0-rc.2")
     implementation("org.incendo:cloud-processors-confirmation:1.0.0-beta.3")
 }
 
@@ -53,7 +53,7 @@ tasks {
         relocationPrefix = "io.github.karmasmp.shade"
     }
     runServer {
-        minecraftVersion("1.20.6")
+        minecraftVersion("1.21")
     }
     processResources {
         val props = mapOf("version" to version)

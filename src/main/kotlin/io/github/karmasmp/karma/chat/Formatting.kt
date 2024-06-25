@@ -11,7 +11,7 @@ import net.kyori.adventure.text.minimessage.tag.standard.StandardTags
 
 object Formatting {
     /** Prefix enum for allowing MiniMessage usage of the <prefix:NAME> tag in messages. **/
-    private enum class Prefix(val prefixName: String, val value: String) {
+    enum class Prefix(val prefixName: String, val value: String) {
         DEV_PREFIX("dev", ""),
         ADMIN_PREFIX("admin", ""),
         NO_PREFIX("", ""),

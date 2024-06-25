@@ -1,6 +1,7 @@
 package io.github.karmasmp.karma.command
 
 import io.github.karmasmp.karma.chat.ChatUtils
+
 import io.papermc.paper.command.brigadier.CommandSourceStack
 
 import org.incendo.cloud.annotations.Command

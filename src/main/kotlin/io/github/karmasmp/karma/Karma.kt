@@ -1,11 +1,9 @@
 package io.github.karmasmp.karma
 
-import io.github.karmasmp.karma.event.ChatListener
-import io.github.karmasmp.karma.event.PlayerDeath
-import io.github.karmasmp.karma.event.PlayerJoin
-import io.github.karmasmp.karma.event.PlayerLeave
+import io.github.karmasmp.karma.event.*
 import io.github.karmasmp.karma.messenger.BrandMessenger
 import io.github.karmasmp.karma.messenger.NoxesiumMessenger
+import io.github.karmasmp.karma.player.nametag.PlayerNametag
 import io.github.karmasmp.karma.util.NoxesiumChannel
 
 import io.papermc.paper.command.brigadier.CommandSourceStack
@@ -30,29 +28,36 @@ import java.time.Duration
 
 @Suppress("unused", "unstableApiUsage")
 class Karma : JavaPlugin() {
-    private lateinit var commandManager : PaperCommandManager<CommandSourceStack>
-    private lateinit var annotationParser : AnnotationParser<CommandSourceStack>
+    private lateinit var commandManager: PaperCommandManager<CommandSourceStack>
+    private lateinit var annotationParser: AnnotationParser<CommandSourceStack>
 
     override fun onEnable() {
-        logger.info("What is up gamers")
+        logger.info("What is up gamers?!")
         registerCommands()
         registerEvents()
+        registerPluginMessengers()
+        PlayerNametag.setup()
     }
 
     override fun onDisable() {
-        logger.info("We are no longer gaming")
+        PlayerNametag.destroy()
+        logger.info("We are no longer gaming.")
     }
 
     private fun registerCommands() {
+        logger.info("Registering commands.")
         commandManager = PaperCommandManager.builder()
             .executionCoordinator(ExecutionCoordinator.simpleCoordinator())
             .buildOnEnable(this)
 
         annotationParser = AnnotationParser(commandManager, CommandSourceStack::class.java)
         annotationParser.parseContainers()
+
+        setupCommandConfirmation()
     }
 
     private fun setupCommandConfirmation() {
+        logger.info("Setting up command confirmation.")
         val confirmationConfig = ConfirmationConfiguration.builder<CommandSourceStack>()
             .cache(SimpleCache.of())
             .noPendingCommandNotifier { css ->
@@ -82,15 +87,21 @@ class Karma : JavaPlugin() {
                 .commandDescription(CommandDescription.commandDescription("Confirm a pending command."))
                 .permission("karma.cmd.confirm")
         )
-
         ConfirmationBuilderModifier.install(annotationParser)
     }
 
     private fun registerEvents() {
+        logger.info("Registering events.")
         registerEvent(PlayerDeath())
         registerEvent(PlayerJoin())
         registerEvent(PlayerLeave())
         registerEvent(ChatListener())
+        registerEvent(BlockEvent())
+        registerEvent(DamageEvent())
+        registerEvent(InteractEvent())
+        registerEvent(ItemEvent())
+        registerEvent(PathfindEvent())
+        registerEvent(RespawnEvent())
     }
 
     private fun registerEvent(listener: Listener) {
@@ -105,5 +116,6 @@ class Karma : JavaPlugin() {
     }
 }
 
-val logger = Bukkit.getPluginManager().getPlugin("Karma")!!.logger
+val plugin = Bukkit.getPluginManager().getPlugin("Karma")!!
+val logger = plugin.logger
 val messenger = Bukkit.getMessenger()
