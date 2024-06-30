@@ -1,8 +1,10 @@
 package io.github.karmasmp.karma.util
 
 import io.github.karmasmp.karma.plugin
+
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
+
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 

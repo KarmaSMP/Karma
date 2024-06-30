@@ -80,7 +80,7 @@ class Karma : JavaPlugin() {
 
         val confirmationManager = ConfirmationManager.confirmationManager(confirmationConfig)
         commandManager.registerCommandPostProcessor(confirmationManager.createPostprocessor())
-        
+
         commandManager.command(
             commandManager.commandBuilder("confirm")
                 .handler(confirmationManager.createExecutionHandler())

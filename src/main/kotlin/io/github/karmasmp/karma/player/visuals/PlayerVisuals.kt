@@ -69,7 +69,7 @@ object PlayerVisuals {
             }
         }.runTaskTimer(plugin, 0L, 1L)
     }
-
+    
     fun gainLife(karmaPlayer: KarmaPlayer) {
         val bukkitPlayer = karmaPlayer.uuid.getPlayer().player
         if(bukkitPlayer != null) {

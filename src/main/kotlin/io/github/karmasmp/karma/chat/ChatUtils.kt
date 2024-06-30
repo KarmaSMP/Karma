@@ -4,6 +4,8 @@ import io.github.karmasmp.karma.chat.Formatting.allTags
 import io.github.karmasmp.karma.chat.Formatting.restrictedTags
 import io.github.karmasmp.karma.player.PlayerManager.getKarmaLives
 import io.github.karmasmp.karma.player.creator.Creator.isCreator
+import io.github.karmasmp.karma.player.admin.Admin.isInStaffMode
+import io.github.karmasmp.karma.player.PlayerManager.getKarmaLives
 import io.github.karmasmp.karma.util.Noxesium
 import io.github.karmasmp.karma.util.Sounds
 

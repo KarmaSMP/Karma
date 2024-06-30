@@ -29,6 +29,7 @@ object PlayerManager {
         karmaPlayer.setLives(karmaPlayer.lives - 1)
         if (karmaPlayer.lives == 0) {
             karmaPlayer.setState(PlayerState.GHOST)
+            PlayerVisuals.death(karmaPlayer)
         }
         PlayerVisuals.death(karmaPlayer)
     }
