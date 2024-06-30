@@ -14,12 +14,12 @@ class ChatCommand {
     @Command("ac <text>")
     @Permission("karma.cmd.chat.admin")
     fun adminChat(css : CommandSourceStack, text : Array<String>) {
-        ChatUtils.broadcastAdmin("<dark_red>[ADMIN] ${css.sender.name}<white>: ${text.joinToString(" ")}", false)
+        ChatUtils.broadcastAdmin("<dark_red>${css.sender.name}<white>: ${text.joinToString(" ")}", false)
     }
 
     @Command("dc <text>")
     @Permission("karma.cmd.chat.dev")
     fun devChat(css : CommandSourceStack, text : Array<String>) {
-        ChatUtils.broadcastDev("<gold>[DEV] ${css.sender.name}<white>: ${text.joinToString(" ")}", false)
+        ChatUtils.broadcastDev("<gold>${css.sender.name}<white>: ${text.joinToString(" ")}", false)
     }
 }

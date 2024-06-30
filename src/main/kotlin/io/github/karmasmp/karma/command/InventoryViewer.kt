@@ -21,7 +21,7 @@ class InventoryViewer {
         if(css.sender is Player) {
             val sender = css.sender as Player
             if(sender == player) {
-                ChatUtils.messageAudience(sender, "<red><prefix:warning>You cannot view your own ${if(isEChest) "<light_purple>Ender Chest" else "<yellow>Inventory"}<red>, you numpty.", false)
+                ChatUtils.messageAudience(sender, "<red><prefix:warning> You cannot view your own ${if(isEChest) "<light_purple>Ender Chest" else "<yellow>Inventory"}<red>, you numpty.", false)
                 sender.playSound(Sounds.ACTION_FAIL)
             } else {
                 if(isEChest) {

@@ -86,6 +86,7 @@ class Karma : JavaPlugin() {
                 .handler(confirmationManager.createExecutionHandler())
                 .commandDescription(CommandDescription.commandDescription("Confirm a pending command."))
                 .permission("karma.cmd.confirm")
+                .build()
         )
         ConfirmationBuilderModifier.install(annotationParser)
     }
@@ -102,6 +103,7 @@ class Karma : JavaPlugin() {
         registerEvent(ItemEvent())
         registerEvent(PathfindEvent())
         registerEvent(RespawnEvent())
+        registerEvent(PingServerEvent())
     }
 
     private fun registerEvent(listener: Listener) {

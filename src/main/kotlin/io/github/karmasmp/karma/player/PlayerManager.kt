@@ -31,6 +31,7 @@ object PlayerManager {
             karmaPlayer.setState(PlayerState.GHOST)
             PlayerVisuals.death(karmaPlayer)
         }
+        PlayerVisuals.death(karmaPlayer)
     }
 
     fun Player.getKarmaLives(): Int {
