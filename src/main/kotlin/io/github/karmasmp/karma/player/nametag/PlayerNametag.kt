@@ -2,16 +2,17 @@ package io.github.karmasmp.karma.player.nametag
 
 import io.github.karmasmp.karma.chat.ChatUtils
 import io.github.karmasmp.karma.chat.Formatting
-import io.github.karmasmp.karma.player.admin.Admin
+import io.github.karmasmp.karma.player.PlayerManager.getKarmaLives
 import io.github.karmasmp.karma.player.admin.Admin.isAdmin
 import io.github.karmasmp.karma.player.admin.Admin.isInStaffMode
-import io.github.karmasmp.karma.player.PlayerManager.getKarmaLives
+import io.github.karmasmp.karma.player.creator.Creator.isLive
 import io.github.karmasmp.karma.plugin
 
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
 
-import org.bukkit.*
+import org.bukkit.Bukkit
+import org.bukkit.Color
+import org.bukkit.GameMode
 import org.bukkit.entity.AreaEffectCloud
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
@@ -37,6 +38,7 @@ object PlayerNametag {
         nametag.isCustomNameVisible = true
 
         playerNametags[player.uniqueId] = nametag
+        player.addPassenger(nametag)
 
         runNametagTask(player, player.uniqueId, nametag)
     }
@@ -53,21 +55,30 @@ object PlayerNametag {
     private fun runNametagTask(player: Player, uuid: UUID, nametag : AreaEffectCloud) {
         val nametagTask = object : BukkitRunnable() {
             override fun run() {
-                if(Admin.getAdmins().contains(player.uniqueId) && !Admin.getStaffMode().contains(player.uniqueId)) {
-                    nametag.customName(Component.text(Formatting.Prefix.ADMIN_PREFIX.value).append(Component.text(player.name, NamedTextColor.DARK_RED)))
-                } else if(Admin.getAdmins().contains(player.uniqueId) && Admin.getStaffMode().contains(player.uniqueId)) {
-                    nametag.customName(Component.text(Formatting.Prefix.ADMIN_PREFIX.value).append(Component.text(player.name, NamedTextColor.DARK_RED)).append(Component.text(" [STAFF MODE]", NamedTextColor.GOLD)))
-                } else {
-                    nametag.customName(ChatUtils.livesAsComponent(player.getKarmaLives()).append(Component.space()).append(Component.text(player.name, NamedTextColor.WHITE)))
-                }
-                /** Below check is to be removed when updating to 1.21, as passengers and vehicles can be transported across dimensions in this version. **/
-                if(player.location.block.type == Material.NETHER_PORTAL || player.location.block.type == Material.END_PORTAL || player.location.block.type == Material.END_GATEWAY || player.eyeLocation.block.type == Material.NETHER_PORTAL || player.eyeLocation.block.type == Material.END_PORTAL || player.eyeLocation.block.type == Material.END_GATEWAY || (player.isAdmin() && !player.isInStaffMode())) {
-                    player.removePassenger(nametag)
-                    nametag.teleport(Location(player.world, player.x, player.y + 1.5, player.z))
-                } else {
-                    if(!player.passengers.contains(nametag)) {
-                        player.addPassenger(nametag)
+                if(player.isAdmin() && !player.isInStaffMode()) {
+                    if(player.isLive()) {
+                        nametag.customName(Formatting.allTags.deserialize("<prefix:admin> <dark_red>${player.name}"))
+                    } else {
+                        nametag.customName(Formatting.allTags.deserialize("<prefix:admin> <dark_red>${player.name}<reset> <prefix:creator>"))
                     }
+                } else if(player.isAdmin() && player.isInStaffMode()) {
+                    if(player.isLive()) {
+                        nametag.customName(Formatting.allTags.deserialize("<prefix:admin> <dark_red>${player.name}<reset> <prefix:staff> <prefix:creator>"))
+                    } else {
+                        nametag.customName(Formatting.allTags.deserialize("<prefix:admin> <dark_red>${player.name}<reset> <prefix:staff>"))
+                    }
+                } else {
+                    if(player.isLive()) {
+                        nametag.customName(ChatUtils.livesAsComponent(player.getKarmaLives()).append(Formatting.allTags.deserialize(" <white>${player.name} <prefix:creator>")))
+                    } else {
+                        nametag.customName(ChatUtils.livesAsComponent(player.getKarmaLives()).append(Formatting.allTags.deserialize(" <white>${player.name}")))
+                    }
+                }
+                if(!player.passengers.contains(nametag)) {
+                    player.addPassenger(nametag)
+                }
+                if(player.world != nametag.world) {
+                    nametag.teleport(player)
                 }
                 if(player.isSneaking) {
                     nametag.isSneaking = true

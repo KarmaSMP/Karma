@@ -2,8 +2,8 @@ package io.github.karmasmp.karma.chat
 
 import io.github.karmasmp.karma.chat.Formatting.allTags
 import io.github.karmasmp.karma.chat.Formatting.restrictedTags
-import io.github.karmasmp.karma.player.admin.Admin.isInStaffMode
 import io.github.karmasmp.karma.player.PlayerManager.getKarmaLives
+import io.github.karmasmp.karma.player.creator.Creator.isLive
 import io.github.karmasmp.karma.util.Noxesium
 import io.github.karmasmp.karma.util.Sounds
 
@@ -13,6 +13,7 @@ import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -73,7 +74,7 @@ object ChatUtils {
         val admin = Audience.audience(Bukkit.getOnlinePlayers())
             .filterAudience { (it as Player).hasPermission("karma.group.admin") }
         admin.sendMessage(
-            allTags.deserialize("<prefix:admin>").append(allTags.deserialize(rawMessage))
+            allTags.deserialize("<prefix:admin>: $rawMessage")
         )
         if(!isSilent) {
             admin.playSound(Sounds.ADMIN_MESSAGE)
@@ -85,7 +86,7 @@ object ChatUtils {
         val dev = Audience.audience(Bukkit.getOnlinePlayers())
             .filterAudience { (it as Player).hasPermission("karma.group.dev") }
         dev.sendMessage(
-            allTags.deserialize("<prefix:dev>").append(allTags.deserialize(rawMessage))
+            allTags.deserialize("<prefix:dev>: $rawMessage")
         )
         if(!isSilent) {
             dev.playSound(Sounds.ADMIN_MESSAGE)
@@ -96,31 +97,17 @@ object ChatUtils {
 object GlobalRenderer : ChatRenderer {
     override fun render(source: Player, sourceDisplayName: Component, message: Component, viewer: Audience): Component {
         val playerHead = Noxesium.buildSkullComponent(source.uniqueId, false, 0, 0, 1.0f)
+        val plainMessage = PlainTextComponentSerializer.plainText().serialize(message)
         if(source.hasPermission("karma.group.admin")) {
-            return if(source.isInStaffMode()) {
-                playerHead
-                    .append(Component.text(Formatting.Prefix.ADMIN_PREFIX.value))
-                    .append(sourceDisplayName.color(NamedTextColor.DARK_RED))
-                    .append(Component.text(" SM", NamedTextColor.GOLD))
-                    .append(Component.text(": "))
-                    .append(message)
-            } else {
-                playerHead
-                    .append(Component.text(Formatting.Prefix.ADMIN_PREFIX.value))
-                    .append(sourceDisplayName.color(NamedTextColor.DARK_RED))
-                    .append(Component.text(": "))
-                    .append(message)
-            }
+            return playerHead
+                    .append(allTags.deserialize("<prefix:admin> <dark_red>${source.name}<reset>: $plainMessage"))
         } else {
             val lifeCount = source.getKarmaLives()
-
-            val lives = ChatUtils.livesAsComponent(lifeCount).append(Component.text(" "))
+            val lives = ChatUtils.livesAsComponent(lifeCount).append(Component.space())
 
             return playerHead
                 .append(lives)
-                .append(sourceDisplayName)
-                .append(Component.text(": "))
-                .append(message)
+                .append(allTags.deserialize("${source.name} ${if(source.isLive()) { restrictedTags.deserialize(" <red>[LIVE]<reset>: ") } else { restrictedTags.deserialize(": ") }} $plainMessage"))
         }
     }
 }

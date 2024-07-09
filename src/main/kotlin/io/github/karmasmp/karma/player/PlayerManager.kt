@@ -31,12 +31,9 @@ object PlayerManager {
             karmaPlayer.setState(PlayerState.GHOST)
             PlayerVisuals.death(karmaPlayer)
         }
+        PlayerVisuals.death(karmaPlayer)
     }
 
-    fun Player.getKarmaLives(): Int {
-        val karmaPlayer = karmaPlayers.find { it.uuid == this.uniqueId }
-        return karmaPlayer!!.lives
-    }
 
     fun Player.setKarmaLives(lives: Int) {
         if (lives > 3 || lives < 0) throw PlayerManagerException("Invalid amount of lives passed")
@@ -46,6 +43,11 @@ object PlayerManager {
             PlayerVisuals.gainLife(karmaPlayer)
         }
         karmaPlayer.setLives(lives)
+    }
+
+    fun Player.getKarmaLives(): Int {
+        val karmaPlayer = karmaPlayers.find { it.uuid == this.uniqueId }
+        return karmaPlayer!!.lives
     }
 
     fun Player.getKarmaPlayer(): KarmaPlayer {
