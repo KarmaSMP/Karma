@@ -5,7 +5,7 @@ import io.github.karmasmp.karma.chat.Formatting
 import io.github.karmasmp.karma.player.PlayerManager.getKarmaLives
 import io.github.karmasmp.karma.player.admin.Admin.isAdmin
 import io.github.karmasmp.karma.player.admin.Admin.isInStaffMode
-import io.github.karmasmp.karma.player.creator.Creator.isCreator
+import io.github.karmasmp.karma.player.creator.Creator.isLive
 import io.github.karmasmp.karma.plugin
 
 import net.kyori.adventure.text.Component
@@ -56,19 +56,19 @@ object PlayerNametag {
         val nametagTask = object : BukkitRunnable() {
             override fun run() {
                 if(player.isAdmin() && !player.isInStaffMode()) {
-                    if(player.isCreator()) {
+                    if(player.isLive()) {
                         nametag.customName(Formatting.allTags.deserialize("<prefix:admin> <dark_red>${player.name}"))
                     } else {
                         nametag.customName(Formatting.allTags.deserialize("<prefix:admin> <dark_red>${player.name}<reset> <prefix:creator>"))
                     }
                 } else if(player.isAdmin() && player.isInStaffMode()) {
-                    if(player.isCreator()) {
+                    if(player.isLive()) {
                         nametag.customName(Formatting.allTags.deserialize("<prefix:admin> <dark_red>${player.name}<reset> <prefix:staff> <prefix:creator>"))
                     } else {
                         nametag.customName(Formatting.allTags.deserialize("<prefix:admin> <dark_red>${player.name}<reset> <prefix:staff>"))
                     }
                 } else {
-                    if(player.isCreator()) {
+                    if(player.isLive()) {
                         nametag.customName(ChatUtils.livesAsComponent(player.getKarmaLives()).append(Formatting.allTags.deserialize(" <white>${player.name} <prefix:creator>")))
                     } else {
                         nametag.customName(ChatUtils.livesAsComponent(player.getKarmaLives()).append(Formatting.allTags.deserialize(" <white>${player.name}")))

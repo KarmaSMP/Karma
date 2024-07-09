@@ -10,7 +10,7 @@ import io.github.karmasmp.karma.player.PlayerManager.getKarmaLives
 import io.github.karmasmp.karma.player.PlayerManager.getPlayer
 import io.github.karmasmp.karma.player.admin.Admin.isAdmin
 import io.github.karmasmp.karma.player.admin.Admin.isInStaffMode
-import io.github.karmasmp.karma.player.creator.Creator.isCreator
+import io.github.karmasmp.karma.player.creator.Creator.isLive
 import io.github.karmasmp.karma.plugin
 import io.github.karmasmp.karma.util.Sounds
 
@@ -53,14 +53,21 @@ object PlayerVisuals {
                             player.sendActionBar(Formatting.allTags.deserialize("${if(player.inventory.itemInOffHand.type == Material.AIR) ADMIN_IMAGE_SPACER else ADMIN_IMAGE_OFFHAND_SPACER}<actionbar:admin>"))
                         }
                     } else {
-                        if(player.getKarmaLives() >= 3) {
-                            player.sendActionBar(Formatting.allTags.deserialize("${if(player.inventory.itemInOffHand.type == Material.AIR) LIFE_IMAGE_SPACER else LIFE_IMAGE_OFFHAND_SPACER}<actionbar:three>"))
-                        } else if(player.getKarmaLives() == 2) {
-                            player.sendActionBar(Formatting.allTags.deserialize("${if(player.inventory.itemInOffHand.type == Material.AIR) LIFE_IMAGE_SPACER else LIFE_IMAGE_OFFHAND_SPACER}<actionbar:two>"))
-                        } else if(player.getKarmaLives() == 1) {
-                            player.sendActionBar(Formatting.allTags.deserialize("${if(player.inventory.itemInOffHand.type == Material.AIR) LIFE_IMAGE_SPACER else LIFE_IMAGE_OFFHAND_SPACER}<actionbar:one>"))
-                        } else {
-                            player.sendActionBar(Formatting.allTags.deserialize("${if(player.inventory.itemInOffHand.type == Material.AIR) LIFE_IMAGE_SPACER else LIFE_IMAGE_OFFHAND_SPACER}<actionbar:ghost>"))
+                        when(player.getKarmaLives()) {
+                            3 -> {
+                                player.sendActionBar(Formatting.allTags.deserialize("${if(player.inventory.itemInOffHand.type == Material.AIR) LIFE_IMAGE_SPACER else LIFE_IMAGE_OFFHAND_SPACER}<actionbar:three>"))
+                            }
+                            2 -> {
+                                player.sendActionBar(Formatting.allTags.deserialize("${if(player.inventory.itemInOffHand.type == Material.AIR) LIFE_IMAGE_SPACER else LIFE_IMAGE_OFFHAND_SPACER}<actionbar:two>"))
+                            }
+                            1 -> {
+                                player.sendActionBar(Formatting.allTags.deserialize("${if(player.inventory.itemInOffHand.type == Material.AIR) LIFE_IMAGE_SPACER else LIFE_IMAGE_OFFHAND_SPACER}<actionbar:one>"))
+                            }
+                            0 -> {
+                                player.sendActionBar(Formatting.allTags.deserialize("${if(player.inventory.itemInOffHand.type == Material.AIR) LIFE_IMAGE_SPACER else LIFE_IMAGE_OFFHAND_SPACER}<actionbar:ghost>"))
+                            } else -> {
+                                player.sendActionBar(Formatting.allTags.deserialize("<red>Unable to parse current state to action bar."))
+                            }
                         }
                     }
                 } else {
@@ -194,9 +201,9 @@ object PlayerVisuals {
     }
 
     fun toggleCreator(player: Player) {
-        Sounds.playProgressSoundLoop(player, "block.amethyst_block.resonate", !player.isCreator(), isGlobal = false)
+        Sounds.playProgressSoundLoop(player, "block.amethyst_block.resonate", !player.isLive(), isGlobal = false)
         player.world.spawnParticle(Particle.WITCH, player.eyeLocation, 50, 1.0, 1.0, 1.0)
-        ChatUtils.messageAudience(Audience.audience(player), "<notifcolour><prefix:warning><reset> You toggled ${if(player.isCreator()) { "<green>into" } else { "<red>out<reset> of" }} <notifcolour>Creator<reset> mode.", false)
-        ChatUtils.broadcastAdmin("<notifcolour>${player.name} <white>toggled ${if(player.isCreator()) { "<green>into" } else { "<red>out<reset> of" }} <notifcolour>Creator <white>mode.", false)
+        ChatUtils.messageAudience(Audience.audience(player), "<notifcolour><prefix:warning><reset> You toggled ${if(player.isLive()) { "<green>into" } else { "<red>out<reset> of" }} <notifcolour>Creator<reset> mode.", false)
+        ChatUtils.broadcastAdmin("<notifcolour>${player.name} <white>toggled ${if(player.isLive()) { "<green>into" } else { "<red>out<reset> of" }} <notifcolour>Creator <white>mode.", false)
     }
 }

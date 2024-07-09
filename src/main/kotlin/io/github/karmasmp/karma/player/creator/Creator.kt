@@ -24,7 +24,7 @@ object Creator {
         return creators
     }
 
-    fun Player.isCreator(): Boolean {
+    fun Player.isLive(): Boolean {
         return creators.contains(this.uniqueId)
     }
 }

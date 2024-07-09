@@ -3,9 +3,7 @@ package io.github.karmasmp.karma.chat
 import io.github.karmasmp.karma.chat.Formatting.allTags
 import io.github.karmasmp.karma.chat.Formatting.restrictedTags
 import io.github.karmasmp.karma.player.PlayerManager.getKarmaLives
-import io.github.karmasmp.karma.player.creator.Creator.isCreator
-import io.github.karmasmp.karma.player.admin.Admin.isInStaffMode
-import io.github.karmasmp.karma.player.PlayerManager.getKarmaLives
+import io.github.karmasmp.karma.player.creator.Creator.isLive
 import io.github.karmasmp.karma.util.Noxesium
 import io.github.karmasmp.karma.util.Sounds
 
@@ -76,7 +74,7 @@ object ChatUtils {
         val admin = Audience.audience(Bukkit.getOnlinePlayers())
             .filterAudience { (it as Player).hasPermission("karma.group.admin") }
         admin.sendMessage(
-            allTags.deserialize("<prefix:admin>:").append(Component.space()).append(allTags.deserialize(rawMessage))
+            allTags.deserialize("<prefix:admin>: $rawMessage")
         )
         if(!isSilent) {
             admin.playSound(Sounds.ADMIN_MESSAGE)
@@ -88,7 +86,7 @@ object ChatUtils {
         val dev = Audience.audience(Bukkit.getOnlinePlayers())
             .filterAudience { (it as Player).hasPermission("karma.group.dev") }
         dev.sendMessage(
-            allTags.deserialize("<prefix:dev>:").append(Component.space()).append(allTags.deserialize(rawMessage))
+            allTags.deserialize("<prefix:dev>: $rawMessage")
         )
         if(!isSilent) {
             dev.playSound(Sounds.ADMIN_MESSAGE)
@@ -102,19 +100,14 @@ object GlobalRenderer : ChatRenderer {
         val plainMessage = PlainTextComponentSerializer.plainText().serialize(message)
         if(source.hasPermission("karma.group.admin")) {
             return playerHead
-                    .append(Component.text(Formatting.Prefix.ADMIN_PREFIX.value)).append(Component.space())
-                    .append(sourceDisplayName.color(NamedTextColor.DARK_RED))
-                    .append(Component.text(": "))
-                    .append(allTags.deserialize(plainMessage))
+                    .append(allTags.deserialize("<prefix:admin> <dark_red>${source.name}<reset>: $plainMessage"))
         } else {
             val lifeCount = source.getKarmaLives()
             val lives = ChatUtils.livesAsComponent(lifeCount).append(Component.space())
 
             return playerHead
                 .append(lives)
-                .append(sourceDisplayName)
-                .append(if(source.isCreator()) { restrictedTags.deserialize(" <red>[LIVE]<reset>: ") } else { restrictedTags.deserialize(": ") })
-                .append(restrictedTags.deserialize(plainMessage))
+                .append(allTags.deserialize("${source.name} ${if(source.isLive()) { restrictedTags.deserialize(" <red>[LIVE]<reset>: ") } else { restrictedTags.deserialize(": ") }} $plainMessage"))
         }
     }
 }
