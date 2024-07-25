@@ -2,6 +2,7 @@ package io.github.karmasmp.karma.event
 
 import io.github.karmasmp.karma.player.admin.Admin.isAdmin
 import io.github.karmasmp.karma.player.admin.Admin.isInStaffMode
+import org.bukkit.entity.AreaEffectCloud
 
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -18,6 +19,12 @@ class PathfindEvent : Listener {
                 if(targetedPlayer.isAdmin() && !targetedPlayer.isInStaffMode()) {
                     e.target = null
                     e.isCancelled = true
+                }
+                if(targetedPlayer.vehicle != null) {
+                    if(targetedPlayer.vehicle is AreaEffectCloud) {
+                        e.target = null
+                        e.isCancelled = true
+                    }
                 }
             }
         }

@@ -1,6 +1,7 @@
 package io.github.karmasmp.karma.player.admin
 
 import io.github.karmasmp.karma.plugin
+import io.github.karmasmp.karma.util.Pathfinder
 
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -35,6 +36,7 @@ object Admin {
         if(staffMode.contains(player.uniqueId)) {
             staffMode.remove(player.uniqueId)
             hidePlayer(player)
+            Pathfinder.clearNearbyTargets(player)
         }
     }
 

@@ -6,6 +6,7 @@ import io.github.karmasmp.karma.player.visuals.PlayerVisuals
 import io.github.karmasmp.karma.util.Sounds
 
 import io.papermc.paper.command.brigadier.CommandSourceStack
+import net.kyori.adventure.text.Component
 
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -32,7 +33,7 @@ class DevCommand {
         if(css.sender is Player) {
             val player = css.sender as Player
             player.setKarmaLives(0)
-            PlayerVisuals.death(player.getKarmaPlayer())
+            PlayerVisuals.death(player.getKarmaPlayer(), Component.text("${player.name} became the victim of developer voodoo."))
         }
     }
 }

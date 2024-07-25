@@ -2,6 +2,7 @@ package io.github.karmasmp.karma.player
 
 import io.github.karmasmp.karma.logger
 import io.github.karmasmp.karma.player.visuals.PlayerVisuals
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
@@ -20,7 +21,7 @@ object PlayerManager {
         karmaPlayers.add(KarmaPlayer(player.uniqueId))
     }
 
-    fun death(player: Player) {
+    fun death(player: Player, deathMessage: Component) {
         val uuid = player.uniqueId
         val karmaPlayer = karmaPlayers.find { it.uuid == uuid }
         if (karmaPlayer == null) throw PlayerManagerException("Player $uuid not found on death.")
@@ -29,9 +30,8 @@ object PlayerManager {
         karmaPlayer.setLives(karmaPlayer.lives - 1)
         if (karmaPlayer.lives == 0) {
             karmaPlayer.setState(PlayerState.GHOST)
-            PlayerVisuals.death(karmaPlayer)
         }
-        PlayerVisuals.death(karmaPlayer)
+        PlayerVisuals.death(karmaPlayer, deathMessage)
     }
 
 

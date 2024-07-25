@@ -35,7 +35,7 @@ class NoxesiumCommand {
         if(protocol != null) {
             css.sender.sendMessage(Component.text("${player.name}'s Noxesium protocol is ", NamedTextColor.YELLOW).append(Component.text("$protocol", NamedTextColor.GOLD)).append(Component.text(".", NamedTextColor.YELLOW)))
         } else {
-            css.sender.sendMessage(Component.text("${player.name} is not registered as a Noxesium user.", NamedTextColor.YELLOW))
+            css.sender.sendMessage(Component.text("${player.name} is not registered as a Noxesium user, you blithering idiot.", NamedTextColor.RED))
         }
     }
 }

@@ -102,8 +102,11 @@ class Karma : JavaPlugin() {
         registerEvent(InteractEvent())
         registerEvent(ItemEvent())
         registerEvent(PathfindEvent())
-        registerEvent(RespawnEvent())
+        registerEvent(ExpEvent())
         registerEvent(PingServerEvent())
+        registerEvent(DismountEvent())
+        registerEvent(PotionEvent())
+        registerEvent(ArrowEvent())
     }
 
     private fun registerEvent(listener: Listener) {

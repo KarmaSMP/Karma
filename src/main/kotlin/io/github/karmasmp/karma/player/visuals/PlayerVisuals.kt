@@ -11,19 +11,18 @@ import io.github.karmasmp.karma.player.PlayerManager.getPlayer
 import io.github.karmasmp.karma.player.admin.Admin.isAdmin
 import io.github.karmasmp.karma.player.admin.Admin.isInStaffMode
 import io.github.karmasmp.karma.player.creator.Creator.isLive
+import io.github.karmasmp.karma.player.nametag.PlayerNametag
 import io.github.karmasmp.karma.plugin
+import io.github.karmasmp.karma.util.Pathfinder
 import io.github.karmasmp.karma.util.Sounds
 
 import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.kyori.adventure.title.Title
 
-import org.bukkit.EntityEffect
-import org.bukkit.Material
-import org.bukkit.Particle
-import org.bukkit.entity.ArmorStand
-import org.bukkit.entity.Bat
-import org.bukkit.entity.EntityType
-import org.bukkit.entity.Player
+import org.bukkit.*
+import org.bukkit.entity.*
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
@@ -31,6 +30,10 @@ import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 
 import java.time.Duration
+
+import kotlin.math.cos
+import kotlin.math.roundToInt
+import kotlin.math.sin
 
 object PlayerVisuals {
     private const val ADMIN_STAFF_MODE_IMAGE_SPACER = "<translate:space.-225>"
@@ -95,34 +98,51 @@ object PlayerVisuals {
         }
     }
 
-    fun death(karmaPlayer: KarmaPlayer) {
+    fun death(karmaPlayer: KarmaPlayer, deathMessage: Component) {
         val bukkitPlayer = karmaPlayer.uuid.getPlayer().player
+        val plainDeathMessage = PlainTextComponentSerializer.plainText().serialize(deathMessage)
+
         if(bukkitPlayer != null) {
-            bukkitPlayer.world.strikeLightningEffect(bukkitPlayer.location)
-            bukkitPlayer.world.spawnParticle(
-                Particle.EFFECT,
-                bukkitPlayer.eyeLocation,
-                50,
-                1.0,
-                1.0,
-                1.0
-            )
-            bukkitPlayer.world.spawnParticle(
-                Particle.END_ROD,
-                bukkitPlayer.eyeLocation,
-                50,
-                2.0,
-                2.0,
-                2.0,
-            )
+            parseDeathMessage(bukkitPlayer, plainDeathMessage)
+            Pathfinder.clearNearbyTargets(bukkitPlayer)
+
+            val playerInventory = bukkitPlayer.inventory.contents.filterNotNull()
+            spreadItemsXp(bukkitPlayer, playerInventory, bukkitPlayer.location)
+
+            bukkitPlayer.clearActivePotionEffects()
+
+            val deathVehicle : AreaEffectCloud = bukkitPlayer.world.spawn(bukkitPlayer.location, AreaEffectCloud::class.java)
+            deathVehicle.duration = Int.MAX_VALUE
+            deathVehicle.radius = 0F
+            deathVehicle.waitTime = 0
+            deathVehicle.color = Color.BLACK
+            deathVehicle.addScoreboardTag("${bukkitPlayer.uniqueId}-death-vehicle")
+            deathVehicle.addPassenger(bukkitPlayer)
+
+            hidePlayer(bukkitPlayer)
+
+            deathEffects(bukkitPlayer)
+
+            /** Scheduled Respawn and Post Respawn **/
+            object : BukkitRunnable() {
+                override fun run() {
+                    respawn(bukkitPlayer)
+                    object : BukkitRunnable() {
+                        override fun run() {
+                            postRespawn(bukkitPlayer, deathVehicle)
+                        }
+                    }.runTaskLater(plugin, 20L)
+                }
+            }.runTaskLater(plugin, 160L)
+
             if(karmaPlayer.lives == 0) {
                 bukkitPlayer.showTitle(
                     Title.title(
                         Formatting.allTags.deserialize("<gray>You are now a Ghost!"),
-                        Formatting.allTags.deserialize(""),
+                        Formatting.allTags.deserialize("<dark_gray>${plainDeathMessage}"),
                         Title.Times.times(
-                            Duration.ofSeconds(0),
-                            Duration.ofSeconds(3),
+                            Duration.ofMillis(250),
+                            Duration.ofSeconds(8),
                             Duration.ofMillis(750)
                         )
                     )
@@ -133,16 +153,165 @@ object PlayerVisuals {
                 bukkitPlayer.showTitle(
                     Title.title(
                         Formatting.allTags.deserialize("<red>You lost a life!"),
-                        Formatting.allTags.deserialize(""),
+                        Formatting.allTags.deserialize("<gray>${plainDeathMessage}"),
                         Title.Times.times(
-                            Duration.ofSeconds(0),
-                            Duration.ofSeconds(3),
+                            Duration.ofMillis(250),
+                            Duration.ofSeconds(8),
                             Duration.ofMillis(750)
                         )
                     )
                 )
             }
         }
+    }
+
+    private fun parseDeathMessage(player: Player, plainDeathMessage: String) {
+        val parsedDeathMessage = plainDeathMessage.replace(player.name,
+            "${if(player.getKarmaLives() + 1 >= 3) "<green>"
+            else if(player.getKarmaLives() + 1 == 2) "<yellow>"
+            else if(player.getKarmaLives() + 1 == 1) "<red>"
+            else "<dark_gray>"}${player.name}<reset>"
+        )
+        ChatUtils.messageAudience(Audience.audience(Bukkit.getOnlinePlayers()), "<red><prefix:skull><reset> $parsedDeathMessage.", false)
+    }
+
+    fun hidePlayer(player: Player) {
+        for(other in Bukkit.getOnlinePlayers()) {
+            other.hidePlayer(plugin, player)
+        }
+    }
+
+    fun showPlayer(player: Player) {
+        for(other in Bukkit.getOnlinePlayers()) {
+            other.showPlayer(plugin, player)
+        }
+    }
+
+    private fun deathEffects(player: Player) {
+        player.world.strikeLightningEffect(player.location)
+        player.world.spawnParticle(
+            Particle.FLASH,
+            player.eyeLocation,
+            5,
+            0.0,
+            0.0,
+            0.0
+        )
+        player.world.spawnParticle(
+            Particle.END_ROD,
+            player.eyeLocation,
+            50,
+            2.0,
+            2.0,
+            2.0
+        )
+        player.playSound(Sounds.DEATH)
+    }
+
+    private fun respawn(player: Player) {
+        Pathfinder.clearNearbyTargets(player)
+        player.showTitle(
+            Title.title(
+                Formatting.allTags.deserialize("\uF000"), //TODO: MOVE SCREEN EFFECTS SOMEWHERE ELSE
+                Formatting.allTags.deserialize(""),
+                Title.Times.times(
+                    Duration.ofMillis(250),
+                    Duration.ofSeconds(2),
+                    Duration.ofMillis(500)
+                )
+            )
+        )
+        player.playSound(Sounds.RESPAWN)
+    }
+
+    private fun postRespawn(player: Player, deathVehicle: AreaEffectCloud) {
+        player.inventory.helmet = ItemStack(Material.AIR, 1)
+        player.eject()
+        deathVehicle.remove()
+        player.teleport(if(player.respawnLocation != null) player.respawnLocation!! else Bukkit.getWorlds()[0].spawnLocation)
+        player.fireTicks = 0
+        player.health = 20.0
+        player.foodLevel = 20
+        player.saturation = 5.0f
+        Pathfinder.clearNearbyTargets(player)
+        showPlayer(player)
+        PlayerNametag.buildNametag(player)
+    }
+
+    fun disconnectInterruptDeath(player: Player) {
+        if(player.vehicle is AreaEffectCloud) {
+            player.inventory.helmet = ItemStack(Material.AIR, 1)
+            player.vehicle?.remove()
+            showPlayer(player)
+            player.teleport(if(player.respawnLocation != null) player.respawnLocation!! else Bukkit.getWorlds()[0].spawnLocation)
+        }
+    }
+
+    fun getExpAtLevel(level: Int): Int {
+        return if (level <= 16) {
+            (level * level) + 6 * level
+        } else if (level <= 31) {
+            (2.5 * (level * level) - 40.5 * level + 360.0).toInt()
+        } else {
+            (4.5 * (level * level) - 162.5 * level + 2220.0).toInt()
+        }
+    }
+
+
+    private fun spreadItemsXp(player: Player, playerInventory: List<ItemStack>, deathLoc: Location) {
+        val expAmount = getExpAtLevel(player.level) * 0.05
+        val expOrb = player.world.spawn(player.location, ExperienceOrb::class.java)
+        expOrb.experience = expAmount.roundToInt()
+
+        player.level = 0
+        player.exp = 0.0f
+
+        object : BukkitRunnable() {
+            override fun run() {
+                val angleIncrement = (2 * Math.PI) / playerInventory.size
+                var currentAngle = 0.0
+
+                for(itemStack in playerInventory) {
+                    val x = deathLoc.x + 0.1 * cos(currentAngle)
+                    val z = deathLoc.z + 0.1 * sin(currentAngle)
+                    val itemLocation = Location(deathLoc.world, x, deathLoc.y, z)
+                    val item = deathLoc.world.dropItem(deathLoc, itemStack)
+                    item.velocity = Vector(0, 0, 0)
+                    droppedItemParticles(item)
+                    item.pickupDelay = 8 * 20
+                    item.setGravity(false)
+                    item.teleport(itemLocation)
+
+                    val direction = itemLocation.toVector().subtract(deathLoc.toVector()).normalize().multiply(0.05)
+                    direction.y = 0.05
+                    item.velocity = direction
+
+                    currentAngle += angleIncrement
+                }
+
+                player.inventory.clear()
+                player.inventory.helmet = ItemStack(Material.CARVED_PUMPKIN, 1)
+            }
+        }.runTask(plugin)
+    }
+
+    private fun droppedItemParticles(item: Item) {
+        object : BukkitRunnable() {
+            override fun run() {
+                if(!item.isDead) {
+                    item.world.spawnParticle(
+                        Particle.END_ROD,
+                        item.location,
+                        0,
+                        0.0,
+                        0.0,
+                        0.0
+                    )
+                } else {
+                    cancel()
+                }
+            }
+        }.runTaskTimer(plugin, 0L, 5L)
     }
 
     private fun playGhostAnimation(player: Player) {
@@ -172,14 +341,14 @@ object PlayerVisuals {
     }
 
     private fun getGhost(player: Player) : Pair<Bat, ArmorStand> {
-        val bat = player.location.world.spawnEntity(player.location, EntityType.BAT) as Bat
+        val bat = player.eyeLocation.world.spawnEntity(player.location, EntityType.BAT) as Bat
         bat.isAwake = true
         bat.isSilent = true
         bat.isInvisible = true
         bat.isInvulnerable = true
         bat.addScoreboardTag("ghost.bat.${player.uniqueId}")
 
-        val armourStand = player.location.world.spawnEntity(player.location, EntityType.ARMOR_STAND) as ArmorStand
+        val armourStand = player.eyeLocation.world.spawnEntity(player.location, EntityType.ARMOR_STAND) as ArmorStand
         armourStand.isInvulnerable = true
         armourStand.isInvisible = true
         armourStand.isSmall = true

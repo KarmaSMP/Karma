@@ -17,7 +17,8 @@ object Formatting {
         STAFF_MODE_PREFIX("staff", "\uD004"),
         CREATOR_MODE_PREFIX("creator", "\uD005"),
         NO_PREFIX("", ""),
-        WARNING_PREFIX("warning", "⚠");
+        WARNING_PREFIX("warning", "⚠"),
+        SKULL_PREFIX("skull", "☠");
 
         companion object {
             fun ofName(str : String): Prefix {

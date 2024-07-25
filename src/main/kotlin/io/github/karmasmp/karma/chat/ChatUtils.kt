@@ -107,7 +107,7 @@ object GlobalRenderer : ChatRenderer {
 
             return playerHead
                 .append(lives)
-                .append(allTags.deserialize("${source.name} ${if(source.isLive()) { restrictedTags.deserialize(" <red>[LIVE]<reset>: ") } else { restrictedTags.deserialize(": ") }} $plainMessage"))
+                .append(allTags.deserialize("${source.name}${if(source.isLive()) { " <prefix:creator>: " } else { ": " }}$plainMessage"))
         }
     }
 }

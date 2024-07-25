@@ -4,6 +4,7 @@ import io.github.karmasmp.karma.chat.Formatting
 import io.github.karmasmp.karma.player.PlayerManager.getKarmaLives
 import io.github.karmasmp.karma.player.admin.Admin
 import io.github.karmasmp.karma.player.nametag.PlayerNametag
+import io.github.karmasmp.karma.player.visuals.PlayerVisuals
 import io.github.karmasmp.karma.util.Noxesium
 
 import org.bukkit.event.EventHandler
@@ -15,6 +16,8 @@ class PlayerLeave : Listener {
     private fun onLeave(event: PlayerQuitEvent) {
         PlayerNametag.cancelNametagTask(event.player.uniqueId)
         Noxesium.removeNoxesiumUser(event.player)
+        PlayerVisuals.disconnectInterruptDeath(event.player)
+
         if(Admin.getAdmins().contains(event.player.uniqueId)) {
             event.quitMessage(Formatting.allTags.deserialize(""))
             Admin.removeAdmin(event.player)
